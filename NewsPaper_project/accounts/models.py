@@ -28,4 +28,7 @@ class Author(models.Model):
         self.rating = updated_rating
         self.save()
 
+    def __str__(self):
+        return self.user.username
+
 
