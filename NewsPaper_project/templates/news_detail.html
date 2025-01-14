@@ -3,7 +3,7 @@
 {% load custom_filters %}
 
 {% block title %}
-{{post.get_type_display}} - {{post.title}} ({{ post.author.user.username }})
+{{post.get_type_display}} - {{post.title|censor}} ({{ post.author.user.username }})
 {% endblock title %}
 
 <!-- В контенте на странице мы выводим все товары -->
