@@ -1,0 +1,118 @@
+>>> from news.models import *
+>>> from accounts.models import *
+
+>>> User.objects.create_user('romeo')
+<User: romeo>
+
+>>> User.objects.create_user('alina')
+<User: alina>
+
+>>> Author.objects.create(user=User.objects.get(username='romeo'))
+<Author: Author object (1)>
+
+>>> Author.objects.create(user=User.objects.get(username='alina'))
+<Author: Author object (2)>
+
+>>> Category.objects.create(name='Спорт')
+<Category: Category object (1)>
+
+>>> Category.objects.create(name='Погода')
+<Category: Category object (2)>
+
+>>> Category.objects.create(name='Политика')
+<Category: Category object (3)>
+
+>>> Category.objects.create(name='Москва')
+<Category: Category object (4)>
+
+>>> Post.objects.create(author=Author.objects.get(user__username='romeo'), type=Post.article, title='Про погоду',content='Это содержимое статьи о погоде и её влиянии на спорт.')
+<Post: Post object (1)>
+
+>>> Post.objects.create(author=Author.objects.get(user__username='romeo'), type=Post.article, title='О политике',content='Это содержимое статьи о политике')
+<Post: Post object (2)>
+
+>>> Post.objects.create(author=Author.objects.get(user__username='alina'), type=Post.news, title='Про Москву',content='Москва — столица России, крупнейший город страны
+ и центр культурной, экономической и политической жизни. Она славится историческими памятниками, такими как Кремль и Красная площадь, а также современными архитектурными проектами. Москва объединяет богатую историю и динамичное развитие.')
+<Post: Post object (3)>
+
+>>> PostCategory.objects.create(post=Post.objects.get(pk=1), category=Category.objects.get(name='Спорт'))
+<PostCategory: PostCategory object (1)>
+
+>>> PostCategory.objects.create(post=Post.objects.get(pk=1), category=Category.objects.get(name='Погода'))
+<PostCategory: PostCategory object (2)>
+
+>>> PostCategory.objects.create(post=Post.objects.get(pk=2), category=Category.objects.get(name='Политика'))
+<PostCategory: PostCategory object (3)>
+
+>>> PostCategory.objects.create(post=Post.objects.get(pk=3), category=Category.objects.get(name='Москва'))
+<PostCategory: PostCategory object (4)>
+
+>>> Comment.objects.create(post=Post.objects.get(pk=1), user=User.objects.get(username='alina'), comment_text = 'Very good article, bro')
+<Comment: Comment object (1)>
+
+>>> User.objects.create_user('commentator')
+<User: commentator>
+
+>>> Comment.objects.create(post=Post.objects.get(pk=1), user=User.objects.get(username='commentator'), comment_text = 'That is very bad')
+<Comment: Comment object (2)>
+
+>>> Comment.objects.create(post=Post.objects.get(pk=2), user=User.objects.get(username='commentator'), comment_text = 'Ok article')
+<Comment: Comment object (3)>
+
+>>> Comment.objects.create(post=Post.objects.get(pk=3), user=User.objects.get(username='commentator'), comment_text = 'That is a fantastic news!!!')
+<Comment: Comment object (4)>
+
+>>> Post.objects.get(id=1).like()
+>>> Post.objects.get(id=1).like()
+>>> Post.objects.get(id=1).like()
+>>> Post.objects.get(id=1).dislike()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).dislike()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=3).like()
+>>> Comment.objects.get(id=3).like()
+>>> Comment.objects.get(id=4).like()
+>>> Comment.objects.get(id=4).dislike()
+
+>>> Author.objects.get(user__username='alina').update_rating()
+>>> Author.objects.get(user__username='romeo').update_rating()
+
+>>> Author.objects.order_by('-rating').values('user__username', 'rating').first()
+{'user__username': 'alina', 'rating': 21.0}
+
+>>> best_post = Post.objects.order_by('-rating').first()
+
+>>> best_post.created
+datetime.datetime(2025, 1, 10, 23, 45, 27, 810584, tzinfo=datetime.timezone.utc)
+
+>>> best_post.author.user.username
+'alina'
+
+>>> best_post.rating
+6.0
+
+>>> best_post.title
+'Про Москву'
+
+>>> best_post.preview()
+'Москва — столица России, крупнейший город страны и центр культурной, экономической и политической жизни. Она славится истори...'
+
+>>> Comment.objects.create(post=Post.objects.get(pk=3), user=User.objects.get(username='romeo'), comment_text = 'Very very good article, sister')
+
+>>> Comment.objects.filter(post=best_post.pk).values('created', 'user__username','rating', 'comment_text')
+<QuerySet [{'created': datetime.datetime(2025, 1, 10, 23, 56, 58, 632284, tzinfo=datetime.timezone.utc), 'user__username': 'commentator', 'rating': 0.0, 'comment_text': 'That is a fantastic news!!!'}, {'created': datetime.datetime(2025, 1, 11, 0, 39, 41, 668997, tzinfo=datetime.timezone.utc), 'user__username': 'romeo', 'rating': 0.0, 'comment_text': 'Very very good article, sister'}]>
+
+
