@@ -1,6 +1,6 @@
 import string
 from django import template
-
+from django.db.models import QuerySet
 
 register = template.Library()
 
@@ -16,3 +16,4 @@ def censor(value):
                 value = value.replace(word[1:-1], '*' * len(word[1:-1]))
 
     return value
+

@@ -1,34 +1,58 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
 {% load custom_filters %}
+{% load custom_tags %}
 
-<!-- Название у нас будет products -->
 {% block title %}
 Все новости
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
-    <h1><b>Все новости ({{ news|length }})</b></h1>
+    <h1><b>Все новости ({% news_counter %})</b></h1>
     <h5><i><span style="color: #6a6a6a;"> {{ time_now|date:"d E Y"}}</span></i></h5>
     <hr>
+
+    {% if filterset %}
+        <form action="" method="get">
+           {{ filterset.form.as_p }}
+           <input type="submit" value="Поиск" />
+        </form>
+        <br>
+    {% endif %}
+
     {% if news %}
         <table style="width: 100%;">
-            <tr>
-                <td style="width: 10%;"><b>Заголовок</b></td>
-                <td style="width: 10%;"><b>Дата</b></td>
-                <td style="width: 80%;"><b>Содержание</b></td>
-            </tr>
-            {% for news in news %}
-            <tr>
-                <td>{{ news.title|censor }}</td>
-                <td>{{ news.created|date:"d.m.Y" }}</td>
-                <td style="text-align: justify">{{ news.content|censor|truncatewords:20 }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+    <tr>
+        <td style="width: 10%;"><b>Заголовок</b></td>
+        <td style="width: 10%;"><b>Дата</b></td>
+        <td style="width: 80%;"><b>Содержание</b></td>
+    </tr>
+    {% for item in news %}
+    <tr onclick="window.location.href='{% url 'news-current' item.pk %}';" style="cursor: pointer;">
+        <td>{{ item.title|censor }}</td>
+        <td>{{ item.created|date:"d.m.Y" }}</td>
+        <td style="text-align: justify">{{ item.content|censor|truncatewords:20 }}</td>
+    </tr>
+    {% endfor %}
+</table>
     {% else %}
         <h2>Нет новостей!</h2>
     {% endif %}
+
+   {% if page_obj.has_previous %}
+       <a href="?{% url_replace page=1 %}">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {{ page_obj.number }}
+
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
 {% endblock content %}

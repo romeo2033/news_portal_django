@@ -17,9 +17,24 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from news.views import (
+    NewsListView, NewsSearchView, NewsCreateView,
+    NewsUpdateView, NewsDeleteView, ArticleCreateView,
+    ArticleUpdateView, ArticleDeleteView, CurrentPost
+)
 
 urlpatterns = [
    path('admin/', admin.site.urls),
    path('pages/', include('django.contrib.flatpages.urls')),  # < вот тут
    path('news/', include('news.urls')),
+   path('news/', NewsListView.as_view(), name='news-list'),
+   path('news/search/', NewsSearchView.as_view(), name='news-search'),
+   path('news/create/', NewsCreateView.as_view(), name='news-create'),
+   path('news/<int:pk>/edit/', NewsUpdateView.as_view(), name='news-update'),
+   path('news/<int:pk>/delete/', NewsDeleteView.as_view(), name='news-delete'),
+   path('news/<int:pk>/', CurrentPost.as_view(), name='news-current'),
+
+   path('articles/create/', ArticleCreateView.as_view(), name='article-create'),
+   path('articles/<int:pk>/edit/', ArticleUpdateView.as_view(), name='article-update'),
+   path('articles/<int:pk>/delete/', ArticleDeleteView.as_view(), name='article-delete'),
 ]

@@ -1,0 +1,14 @@
+{% extends 'news_list.html' %}
+
+{% block title %}
+    Создание/Редактирование новости
+{% endblock title %}
+
+{% block content %}
+    <h1>Создание/Редактирование новости</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить новость</button>
+    </form>
+{% endblock content %}
