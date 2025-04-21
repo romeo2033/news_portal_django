@@ -1,0 +1,15 @@
+{% load i18n socialaccount %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+  <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+    {% for provider in socialaccount_providers %}
+      {% provider_login_url provider process=process scope=scope auth_params=auth_params as href %}
+      <form method="post" action="{{ href }}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-dark" style="min-width: 180px;">
+          Войти через {{ provider.name }}
+        </button>
+      </form>
+    {% endfor %}
+  </div>
+{% endif %}

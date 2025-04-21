@@ -1,0 +1,86 @@
+{% extends "flatpages/default.html" %}
+{% load allauth i18n %}
+{% load account socialaccount %}
+
+{% block title %}
+Регистрация
+{% endblock title %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 2rem auto;">
+    <h1><b><span style="color: #272a2d;">Создание аккаунта</span></b></h1>
+    <hr>
+
+    <p class="text-muted mb-4">
+        {% url 'account_login' as login_url %}
+        Уже есть аккаунт? <a href="{{ login_url }}">Войдите</a>.
+    </p>
+
+    {% if not SOCIALACCOUNT_ONLY %}
+        {% url 'account_signup' as action_url %}
+        <form method="post" action="{{ action_url }}">
+            {% csrf_token %}
+            {{ redirect_field }}
+
+            <div class="form-group mb-3">
+                {{ form.username.errors }}
+                <input type="text" name="username" placeholder="Имя пользователя" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form.email.errors }}
+                <input type="email" name="email" placeholder="Email" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form.password1.errors }}
+                <input type="password" name="password1" placeholder="Пароль" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form.password2.errors }}
+                <input type="password" name="password2" placeholder="Подтвердите пароль" class="form-control" required>
+                <details style="margin-top: 0.5rem;">
+                  <summary style="cursor: pointer; color: #3668df;">Показать требования к паролю</summary>
+                  <ul style="margin-top: 0.5rem; font-size: 0.9rem;">
+                    <li>Минимум 8 символов</li>
+                    <li>Хотя бы одна цифра</li>
+                    <li>Хотя бы одна заглавная буква</li>
+                    <li>Хотя бы одна строчная буква</li>
+                    <li>Рекомендуется специальный символ (!, @, #, ...)</li>
+                  </ul>
+                </details>
+            </div>
+
+            <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+        </form>
+    {% endif %}
+
+    {% if PASSKEY_SIGNUP_ENABLED %}
+        <a href="{{ signup_by_passkey_url }}" class="btn btn-outline-primary mt-3">
+            🔑 Зарегистрироваться с ключом безопасности
+        </a>
+    {% endif %}
+
+    {% if SOCIALACCOUNT_ENABLED %}
+        <div class="social-logins text-center mt-4">
+            {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    input {
+        border-radius: 0.5rem;
+        border: 1px solid #e0e5ff;
+        padding: 8px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    input:focus {
+        border-color: #3668df;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(54, 104, 223, 0.2);
+    }
+</style>
+{% endblock %}

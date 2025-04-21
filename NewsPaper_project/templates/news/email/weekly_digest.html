@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Дайджест за неделю</title></head>
+<body>
+  <h1>Привет, {{ user.username }}!</h1>
+  <p>За последнюю неделю вышли новые новости в ваших подписанных разделах:</p>
+  <ul>
+    {% for post in posts %}
+      <li>
+        <a href="{% url 'news-current' post.pk %}">{{ post.title }}</a>
+        — {{ post.created|date:"d.m.Y" }}
+      </li>
+    {% endfor %}
+  </ul>
+  <p>Спасибо, что вы с нами!</p>
+</body>
+</html>

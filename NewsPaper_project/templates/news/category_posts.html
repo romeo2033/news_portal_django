@@ -1,0 +1,31 @@
+{# templates/news/category_posts.html #}
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Категория: {{ category.name|censor }}
+{% endblock title %}
+
+{% block content %}
+  <h1><b><span style="color: #272a2d;">Новости раздела «{{ category.name|censor }}»</span></b></h1>
+
+
+
+  <hr>
+
+  {% for post in posts %}
+    <h2 style="margin-top: 2rem;">
+      <b><span style="color: #272a2d;">
+        <a href="{% url 'news-current' post.pk %}">{{ post.title|censor }}</a>
+      </span></b>
+    </h2>
+    <i><span style="color: #8199ff;">
+      {{ post.author.user.username }} – {{ post.created|date:"d.m.Y" }}
+    </span></i>
+    <br>
+    <p>{{ post.content|slice:":124" }}…</p>
+    <hr>
+  {% empty %}
+    <p>В этой категории пока нет новостей.</p>
+  {% endfor %}
+{% endblock content %}

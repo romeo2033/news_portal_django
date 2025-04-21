@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Новая новость</title></head>
+<body>
+  <h2>{{ post.title }}</h2>
+  <p>Здравствуйте, {{ user.username }}!</p>
+  <p>В разделе «{{ category.name }}» появилась новая новость:</p>
+  <blockquote>
+    {{ post.content|slice:":50" }}…
+  </blockquote>
+  <p><a href="{% url 'news-current' post.pk %}">Читать полностью →</a></p>
+</body>
+</html>
