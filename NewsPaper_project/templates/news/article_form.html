@@ -1,14 +1,24 @@
-{% extends 'news_list.html' %}
+{% extends 'news/news_list.html' %}
 
 {% block title %}
     Создание/Редактирование статьи
 {% endblock title %}
 
 {% block content %}
-    <h1>Создание/Редактирование статьи</h1>
-    <form method="post">
-        {% csrf_token %}
+<h1><b><span style="color: #272a2d;">Создание / Редактирование статьи</span></b></h1>
+<hr>
+<form method="post" style="margin-top: 2rem;">
+    {% csrf_token %}
+    <div style="max-width: 600px; margin: 0 auto;">
         {{ form.as_p }}
-        <button type="submit">Сохранить статью</button>
+        <button type="submit" class="btn btn-success mt-3">💾 Сохранить</button>
+    </div>
     </form>
+<style>
+    input, textarea, select {
+        border-radius: 0.5rem;
+        padding: 8px;
+        border: 1px solid #e0e5ff;
+    }
+</style>
 {% endblock content %}

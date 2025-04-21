@@ -1,15 +1,26 @@
 {% extends 'flatpages/default.html' %}
-
 {% load custom_filters %}
 
 {% block title %}
-{{post.get_type_display}} - {{post.title|censor}} ({{ post.author.user.username }})
+{{ post.get_type_display }} - {{ post.title|censor }} ({{ post.author.user.username }})
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
-<h1><b><span style="color: #272a2d";> {{ post.title|censor }}</span></b></h1>
-<hr><i><b>{{ post.author.user.username }}</b> – {{post.created|date:"d.m.Y"}}</i><hr>
-<br>{{ post.content|censor }}
-{% endblock content %}
+<h1><b><span style="color: #272a2d;">{{ post.title|censor }}</span></b></h1>
+<i><span style="color: #8199ff;"><b>{{ post.author.user.username }}</b> – {{ post.created|date:"d.m.Y" }}</span></i>
+<hr>
 
+<br>{{ post.content|censor }}
+
+{% if request.user.username == post.author.user.username %}
+    <div style="margin-top: 2rem;">
+        {% if post.type == 'NE' %}
+            <a href="{% url 'news-update' post.pk %}" class="btn btn-outline-primary">Редактировать</a>
+            <a href="{% url 'news-delete' post.pk %}" class="btn btn-outline-danger">Удалить</a>
+        {% elif post.type == 'AR' %}
+            <a href="{% url 'article-update' post.pk %}" class="btn btn-outline-primary">Редактировать</a>
+            <a href="{% url 'article-delete' post.pk %}" class="btn btn-outline-danger">Удалить</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock content %}

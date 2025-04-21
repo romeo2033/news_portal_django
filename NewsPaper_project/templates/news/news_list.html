@@ -2,57 +2,171 @@
 
 {% load custom_filters %}
 {% load custom_tags %}
+{% load static %}
 
 {% block title %}
 Все новости
 {% endblock title %}
 
 {% block content %}
-    <h1><b>Все новости ({% news_counter %})</b></h1>
-    <h5><i><span style="color: #6a6a6a;"> {{ time_now|date:"d E Y"}}</span></i></h5>
-    <hr>
+<h1><b>Все новости <sup style="font-size: 0.6em; color: #8199ff;">{% news_counter %}</sup></b></h1>
+<h5><i><span style="color: #8199ff; font-size: 0.8em;">{{ time_now }}</span></i></h5>
 
+
+{% if filterset %}
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" class="btn-primary" value="Поиск" />
+    </form>
+
+    <style>
+        input, textarea, select {
+            border-radius: 0.5rem;
+            padding: 2px;
+            border: 1px solid #e0e5ff;
+        }
+        input[type="submit"][value="Поиск"] {
+            background-color: #3668df;
+            color: white;
+            font-weight: bold;
+            padding: 0.2rem 0.7rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        input[type="submit"][value="Поиск"]:hover {
+            background-color: #2f5ac4;
+        }
+    </style>
+{% endif %}
+
+
+{% if request.user|has_group:"authors" %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <!-- Левая часть -->
+    <div style="display: flex; gap: 0.5rem;">
+        <a href="/articles/create/" class="page-btn" title="Создать статью">➕ Статья</a>
+        <a href="/news/create/" class="page-btn" title="Создать новость">➕ Новость</a>
+        {% if selected_category %}
+            {% if request.user in selected_category.subscribers.all %}
+                <a
+      href="?{% url_replace unsubscribe=selected_category.id %}"
+      class="page-btn current"
+      style="opacity: 0.8;"
+      title="Отписаться"
+    >Подписан</a>
+            {% else %}
+                <a href="?{% url_replace subscribe=selected_category.id %}" class="page-btn">✅ Подписаться</a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+
+    <!-- Правая часть -->
     {% if filterset %}
-        <form action="" method="get">
-           {{ filterset.form.as_p }}
-           <input type="submit" value="Поиск" />
-        </form>
-        <br>
-    {% endif %}
-
-    {% if news %}
-        <table style="width: 100%;">
-    <tr>
-        <td style="width: 10%;"><b>Заголовок</b></td>
-        <td style="width: 10%;"><b>Дата</b></td>
-        <td style="width: 80%;"><b>Содержание</b></td>
-    </tr>
-    {% for item in news %}
-    <tr onclick="window.location.href='{% url 'news-current' item.pk %}';" style="cursor: pointer;">
-        <td>{{ item.title|censor }}</td>
-        <td>{{ item.created|date:"d.m.Y" }}</td>
-        <td style="text-align: justify">{{ item.content|censor|truncatewords:20 }}</td>
-    </tr>
-    {% endfor %}
-</table>
+        <a href="/news/" class="page-btn">
+            <img src="{% static 'img/filter_close.svg' %}" alt="Фильтры" style="width: 20px; height: 20px;">
+        </a>
     {% else %}
-        <h2>Нет новостей!</h2>
+        <a href="search/" class="page-btn">
+            <img src="{% static 'img/filter_open.svg' %}" alt="Фильтры" style="width: 20px; height: 20px;">
+        </a>
+    {% endif %}
+</div>
+{% else %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <!-- Левая часть -->
+    <div style="display: flex; gap: 0.5rem;">
+        {% if selected_category %}
+            {% if request.user in selected_category.subscribers.all %}
+                <a
+      href="?{% url_replace unsubscribe=selected_category.id %}"
+      class="page-btn current"
+      style="opacity: 0.8;"
+      title="Отписаться"
+    >Подписан</a>
+            {% else %}
+                <a href="?{% url_replace subscribe=selected_category.id %}" class="page-btn">✅ Подписаться</a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+
+    <!-- Правая часть -->
+    {% if filterset %}
+        <a href="/news/" class="page-btn">
+            <img src="{% static 'img/filter_close.svg' %}" alt="Фильтры" style="width: 20px; height: 20px;">
+        </a>
+    {% else %}
+        <a href="search/" class="page-btn">
+            <img src="{% static 'img/filter_open.svg' %}" alt="Фильтры" style="width: 20px; height: 20px;">
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if news %}
+    <table style="width: 100%; margin-top: 1rem;">
+        <tr>
+            <td class="col-title" style="border-top-left-radius: 0.5rem; border-bottom-left-radius: 0.5rem;"><b>Заголовок</b></td>
+            <td class="col-title"><b>Дата</b></td>
+            <td class="col-title" style="border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem;"><b>Содержание</b></td>
+        </tr>
+        {% for item in news %}
+        <tr class="clickable-row" onclick="window.location.href='{% url 'news-current' item.pk %}';" style="cursor: pointer;">
+            <td class="col-row">{{ item.title|censor }}</td>
+            <td class="col-row">{{ item.created|date:"d.m.Y" }}</td>
+            <td class="col-content">{{ item.content|censor|truncatewords:20 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <h2>Нет новостей!</h2>
+{% endif %}
+
+{% if paginator.num_pages > 1 %}
+<div style="margin-top: 2rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}" class="page-btn">1</a>
+        <a href="?{% url_replace page=page_obj.previous_page_number %}" class="page-btn">◀</a>
     {% endif %}
 
-   {% if page_obj.has_previous %}
-       <a href="?{% url_replace page=1 %}">1</a>
-       {% if page_obj.previous_page_number != 1 %}
-           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
-       {% endif %}
-   {% endif %}
+    <span class="page-btn current">{{ page_obj.number }}</span>
 
-   {{ page_obj.number }}
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}" class="page-btn">▶</a>
+        <a href="?{% url_replace page=paginator.num_pages %}" class="page-btn">{{ paginator.num_pages }}</a>
+    {% endif %}
 
-   {% if page_obj.has_next %}
-       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
-       {% if paginator.num_pages != page_obj.next_page_number %}
-           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
-       {% endif %}
-   {% endif %}
+</div>
+{% endif %}
 
+<style>
+    .page-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        font-size: 14px;
+        color: #000000;
+        border: 1px solid #e0e5ff;
+        border-radius: 0.4rem;
+        text-decoration: none;
+        background-color: #f7f9ff;
+        transition: all 0.2s;
+    }
+
+    .page-btn:hover {
+        background-color: #dce5ff;
+        color: #274bbf;
+    }
+
+    .page-btn.current {
+        background-color: #3668df;
+        color: white;
+        font-weight: bold;
+        border: 1px solid #3668df;
+        cursor: default;
+    }
+</style>
 {% endblock content %}

@@ -1,16 +1,18 @@
-{% extends 'news_list.html' %}
+{% extends 'flatpages/default.html' %}
 
 {% block title %}
-Удаление новости
+Удаление новости – {{ object.title }}
 {% endblock title %}
 
 {% block content %}
-    <h1>Удаление новости: "{{ object.title }}"</h1>
-    <p>Вы уверены, что хотите удалить эту новость?</p>
-    
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Подтвердить удаление</button>
-        <a href="{% url 'news-list' %}">Отмена</a>
-    </form>
+<h1><b><span style="color: #272a2d;">Удаление новости</span></b></h1>
+<hr>
+<p style="font-size: 1.1rem;">Вы уверены, что хотите удалить новость:</p>
+<p style="font-style: italic; color: #8199ff;">"{{ object.title }}"</p>
+
+<form method="post" style="margin-top: 2rem;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-secondary ml-2">Подтвердить удаление</button>
+    <a href="{% url 'news-current' object.pk %}" class="btn btn-success ml-2">Отмена</a>
+</form>
 {% endblock content %}

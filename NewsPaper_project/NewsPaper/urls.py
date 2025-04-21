@@ -22,7 +22,7 @@ from news.views import (ArticleCreateView, ArticleUpdateView, ArticleDeleteView
 )
 
 urlpatterns = [
-    path('', include('accounts.urls')),
+    path('', include('news.urls')),
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('news/', include('news.urls')),

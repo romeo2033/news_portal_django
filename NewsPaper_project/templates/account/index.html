@@ -1,13 +1,60 @@
-{% extends "main.html" %}
+{% extends "flatpages/default.html" %}
+
+{% block title %}
+Профиль – {{ request.user.username }}
+{% endblock title %}
 
 {% block content %}
-<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+<h1><b><span style="color: #272a2d;">
+    Профиль пользователя: <span style="color: #3668df;">{{ request.user.username }}</span>
+</span></b></h1>
+<hr>
+<i>Добро пожаловать в личный кабинет!</i>
+<hr>
+
+<div style="margin-top: 1rem; margin-bottom: 2rem;">
+    Здесь может содержаться персональная информация для каждого пользователя.
+</div>
+
 <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
-    <button type="submit">Выйти</button>
+    <button type="submit" class="btn btn-danger mt-3">Выйти</button>
+    {% if is_not_author %}
+    <a href="/become-author/" class="btn btn-primary mt-3">Я автор!</a>
+    {% endif %}
 </form>
-{% if is_not_author %}
-<button> <a href="/become-author/"> Я автор!</a> </button>
+
+{% if messages %}
+<div id="toast-container" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+">
+    {% for message in messages %}
+        <div style="
+            background-color: {% if message.tags == 'success' %}#d4edda{% elif message.tags == 'error' %}#f8d7da{% else %}#cce5ff{% endif %};
+            color: {% if message.tags == 'success' %}#155724{% elif message.tags == 'error' %}#721c24{% else %}#004085{% endif %};
+            padding: 10px 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            min-width: 200px;
+            max-width: 300px;
+            font-size: 14px;
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    setTimeout(() => {
+        const toast = document.getElementById('toast-container');
+        if (toast) toast.remove();
+    }, 4000);
+</script>
 {% endif %}
-{% endblock %}
+{% endblock content %}

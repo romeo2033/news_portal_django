@@ -3,6 +3,11 @@ import accounts.models as account_models
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    subscribers = models.ManyToManyField(
+        account_models.User,
+        blank=True,
+        related_name='subscribed_categories'
+    )
 
     def __str__(self):
         return self.name

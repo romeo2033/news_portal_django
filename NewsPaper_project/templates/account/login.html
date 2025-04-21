@@ -3,57 +3,48 @@
 {% load allauth account %}
 
 {% block title %}
-    {% trans "Sign In" %}
+Вход
 {% endblock title %}
 
 {% block content %}
-    <div class="auth-container mt-5 mb-5">
-        <h2 class="mb-4">{% trans "Sign In" %}</h2>
+<div style="max-width: 500px; margin: 2rem auto;">
+    <h1><b><span style="color: #272a2d;">Вход в аккаунт</span></b></h1>
+    <hr>
 
-        {% if not SOCIALACCOUNT_ONLY %}
-            {% setvar link %}<a href="{{ signup_url }}">{% endsetvar %}
-            {% setvar end_link %}</a>{% endsetvar %}
+    {% url 'account_login' as login_url %}
+    <form method="post" action="{{ login_url }}">
+        {% csrf_token %}
+        {{ redirect_field }}
 
-            <p class="text-muted">
-                {% blocktranslate %}If you have not created an account yet, then please {{ link }}sign up{{ end_link }} first.{% endblocktranslate %}
-            </p>
+        <div class="form-group mb-3">
+            {{ form.login.errors }}
+            <input type="text" name="login" placeholder="Имя пользователя/E-mail" class="form-control" required>
+        </div>
 
-            {% url 'account_login' as login_url %}
-            <form method="post" action="{{ login_url }}">
-                {% csrf_token %}
-                {{ redirect_field }}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary mt-3">{% trans "Sign In" %}</button>
-            </form>
-        {% endif %}
+        <div class="form-group mb-3">
+            {{ form.password.errors }}
+            <input type="password" name="password" placeholder="Пароль" class="form-control" required>
+        </div>
 
-        {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
-            <hr />
-            <div class="d-grid gap-2">
-                {% if PASSKEY_LOGIN_ENABLED %}
-                    <button type="submit" form="mfa_login" id="passkey_login" class="btn btn-outline-primary">
-                        {% trans "Sign in with a passkey" %}
-                    </button>
-                {% endif %}
-                {% if LOGIN_BY_CODE_ENABLED %}
-                    <a href="{{ request_login_code_url }}" class="btn btn-outline-primary">
-                        {% trans "Send me a sign-in code" %}
-                    </a>
-                {% endif %}
-            </div>
-        {% endif %}
+        <div class="form-check d-flex align-items-center mb-3">
+            <input type="checkbox" name="remember" class="form-check-input" id="remember">
+            <label class="form-check-label ms-2" for="remember">Запомнить меня</label>
+        </div>
 
-        {% if SOCIALACCOUNT_ENABLED %}
-            <div class="social-logins mt-4">
-                {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-            </div>
-        {% endif %}
-    </div>
-{% endblock content %}
+        <div class="mb-3">
+            <a href="{% url 'account_reset_password' %}">Забыли пароль?</a>
+            <a>|</a>
+            <a href="{{ signup_url  }}">Зарегистрироваться</a>
+        </div>
 
-{% block extra_body %}
-    {{ block.super }}
-    {% if PASSKEY_LOGIN_ENABLED %}
-        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+        <button type="submit" class="btn btn-success mb-3">Войти</button>
+
+    </form>
+
+    {% if SOCIALACCOUNT_ENABLED %}
+        <div class="social-logins text-center mt-4">
+            {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+        </div>
     {% endif %}
+</div>
 {% endblock %}
